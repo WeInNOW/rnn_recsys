@@ -41,7 +41,7 @@ class BaseRS(object):
         self.saver.restore(self.sess, filename)
         
     def _get_loss(self, preds, Y):
-        if self.type_of_loss == 'cross_entropy_loss':
+        if self.type_of_loss == 'cross_entropy_loss': # 交叉熵损失函数；
             error = tf.reduce_mean(
                            tf.nn.sigmoid_cross_entropy_with_logits(logits=tf.reshape(preds, [-1]), labels=tf.reshape(Y, [-1])),
                            name='cross_entropy_loss'
@@ -52,7 +52,8 @@ class BaseRS(object):
             error = tf.reduce_mean(tf.losses.log_loss(predictions=preds, labels=Y), name='mean_log_loss')
         
         return error
-           
+
+    # 训练方法， 梯度下降还是其他- 指定变量即可有随机梯度下降？
     def _optimize(self, loss , model_params ):
         if self.opt == 'adadelta':
             train_step = tf.train.AdadeltaOptimizer(self.lr, self.rho, self.epsilon).minimize(loss, var_list= model_params)
@@ -120,7 +121,7 @@ class LinearAvgRS(BaseRS):
 
     def _build_model(self):
         with tf.name_scope('linear_regression'):
-            preds = tf.nn.xw_plus_b(self.X, self.W, self.b)
+            preds = tf.nn.xw_plus_b(self.X, self.W, self.b) # X * W + b
             #preds = tf.matmul(self.X, self.W)
             preds = tf.sigmoid(preds)
             error = self._get_loss(preds, self.Y)
